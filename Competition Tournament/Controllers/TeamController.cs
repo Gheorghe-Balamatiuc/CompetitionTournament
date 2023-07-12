@@ -1,6 +1,7 @@
 ﻿using Competition_Tournament.Data;
 using Competition_Tournament.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Competition_Tournament.Controllers
@@ -14,9 +15,18 @@ namespace Competition_Tournament.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? competitionId)
         {
-            return View(_context.Teams.ToList());
+            var teams = _context.Teams.AsQueryable();
+
+            if (competitionId != null)
+            {
+                teams = teams.Where(t => t.Competitions.Any(c => c.Id == competitionId));
+            }
+
+            ViewData["Competitions"] = new SelectList(_context.Competitions, "Id", "Name");
+
+            return View(await teams.ToListAsync());
         }
 
         public IActionResult Create() 

@@ -1,27 +1,14 @@
 ﻿@model IEnumerable<Competition_Tournament.Models.Team>
 
 @{
-    ViewData["Title"] = "View";
+    ViewData["Title"] = "Leaderboard";
 }
 
-<h1>View</h1>
+<h1>Leaderboard</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-
-<form method="get">
-    <label for="competitionId">Competition:</label>
-    <select id="competitionId" name="competitionId" onchange="this.form.submit()">
-        <option value="">All</option>
-        @foreach (var item in ViewBag.Competitions)
-        {
-            var selected = item.Value == ViewContext.RouteData.Values["competitionId"]?.ToString();
-            <option value="@item.Value" selected="@selected">@item.Text</option>
-        }
-    </select>
-</form>
-
 <table class="table">
     <thead>
         <tr>
@@ -37,7 +24,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.CreatedOn)
             </th>
-            <th></th>
+            <th>
+                Points
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -56,9 +45,7 @@
                 @Html.DisplayFor(modelItem => item.CreatedOn)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-controller="Players" asp-action="Index" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @ViewBag.TeamPoints[item.Id]
             </td>
         </tr>
 }

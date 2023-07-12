@@ -9,9 +9,10 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
 <form method="get">
     <label for="teamId">Team:</label>
-    <select id="teamId" name="id" onchange="location.href = this.value ? '/Players/Index/' + this.value : '/Players/Index'">
+    <select id="teamId" name="id" onchange="this.form.submit()">
         <option value="">All</option>
         @foreach (var item in ViewBag.Teams)
         {
@@ -19,7 +20,17 @@
             <option value="@item.Value" selected="@selected">@item.Text</option>
         }
     </select>
+    <label for="competitionId">Competition:</label>
+    <select id="competitionId" name="competitionId" onchange="this.form.submit()">
+        <option value="">All</option>
+        @foreach (var item in ViewBag.Competitions)
+        {
+            var selected = item.Value == ViewContext.RouteData.Values["competitionId"]?.ToString();
+            <option value="@item.Value" selected="@selected">@item.Text</option>
+        }
+    </select>
 </form>
+
 <table class="table">
     <thead>
         <tr>

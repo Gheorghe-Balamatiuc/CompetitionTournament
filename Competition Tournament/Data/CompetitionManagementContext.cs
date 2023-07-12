@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Competition_Tournament.Models;
 using Microsoft.EntityFrameworkCore;
+using Competition_Tournament.Models.ViewModel;
 
 namespace Competition_Tournament.Data;
 
@@ -36,7 +37,9 @@ public partial class CompetitionManagementContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__COMPETIT__3214EC07FB846642");
 
-            entity.HasOne(d => d.CompetitionTypeNavigation).WithMany(p => p.Competitions).HasConstraintName("FK__COMPETITI__Compe__3E52440B");
+            entity.HasOne(d => d.CompetitionTypeNavigation).WithMany(p => p.Competitions)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__COMPETITI__Compe__3E52440B");
 
             entity.HasMany(d => d.Teams).WithMany(p => p.Competitions)
                 .UsingEntity<Dictionary<string, object>>(
@@ -67,7 +70,9 @@ public partial class CompetitionManagementContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__GAME__3214EC07DCF17A32");
 
-            entity.HasOne(d => d.Competition).WithMany(p => p.Games).HasConstraintName("FK__GAME__Competitio__4F7CD00D");
+            entity.HasOne(d => d.Competition).WithMany(p => p.Games)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__GAME__Competitio__4F7CD00D");
 
             entity.HasOne(d => d.Team1).WithMany(p => p.GameTeam1s).HasConstraintName("FK__GAME__Team1_Id__4D94879B");
 
@@ -78,7 +83,9 @@ public partial class CompetitionManagementContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__PLAYER__3214EC077548A4DD");
 
-            entity.HasOne(d => d.IdTeamNavigation).WithMany(p => p.Players).HasConstraintName("FK__PLAYER__Id_Team__398D8EEE");
+            entity.HasOne(d => d.IdTeamNavigation).WithMany(p => p.Players)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK__PLAYER__Id_Team__398D8EEE");
         });
 
         modelBuilder.Entity<Team>(entity =>
@@ -90,4 +97,6 @@ public partial class CompetitionManagementContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public DbSet<Competition_Tournament.Models.ViewModel.TeamSelector>? TeamSelector { get; set; }
 }

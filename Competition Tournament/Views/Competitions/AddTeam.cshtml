@@ -1,0 +1,60 @@
+﻿@model Competition_Tournament.Models.ViewModel.TeamSelector
+
+@{
+    ViewData["Title"] = "AddTeam";
+}
+
+<h1>AddTeam</h1>
+
+<h4>TeamSelector</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddTeamConfirmed" asp-route-id="@Model.Competition.Id">
+            <input type="hidden" asp-for="Competition.Id" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Team" class="control-label"></label>
+                <select asp-for="Team" class="form-control" asp-items="ViewBag.availableTeams"></select>
+                <span asp-validation-for="Team" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="AddTeam" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                TeamName
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Competition.Teams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <form asp-action="RemoveTeam" asp-route-id="@Model.Competition.Id" asp-route-teamId="@item.Id" method="post">
+                        <input type="submit" value="Remove" class="btn btn-danger" />
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

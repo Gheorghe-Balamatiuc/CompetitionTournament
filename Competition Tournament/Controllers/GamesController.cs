@@ -20,10 +20,18 @@ namespace Competition_Tournament.Controllers
         }
 
         // GET: Games
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? competitionId)
         {
-            var competitionManagementContext = _context.Games.Include(g => g.Competition).Include(g => g.Team1).Include(g => g.Team2);
-            return View(await competitionManagementContext.ToListAsync());
+            IQueryable<Game> games = _context.Games.Include(g => g.Competition).Include(g => g.Team1).Include(g => g.Team2);
+
+            if (competitionId != null)
+            {
+                games = games.Where(g => g.CompetitionId == competitionId);
+            }
+
+            ViewData["Competitions"] = new SelectList(_context.Competitions, "Id", "Name");
+
+            return View(await games.ToListAsync());
         }
 
         // GET: Games/Details/5
@@ -48,11 +56,15 @@ namespace Competition_Tournament.Controllers
         }
 
         // GET: Games/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
-            ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Id");
-            ViewData["Team1Id"] = new SelectList(_context.Teams, "Id", "Id");
-            ViewData["Team2Id"] = new SelectList(_context.Teams, "Id", "Id");
+            var competition = _context.Competitions.Include(c => c.Teams).FirstOrDefault(g => g.Id == id);
+            if(competition == null) { return NotFound(); }
+            ViewData["id"] = id;
+            ViewBag.CompetitionName = _context.Competitions.FirstOrDefault(c => c.Id == id)?.Name;
+            ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Name");
+            ViewData["Team1Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == id)), "Id", "Name");
+            ViewData["Team2Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == id)), "Id", "Name");
             return View();
         }
 
@@ -61,17 +73,39 @@ namespace Competition_Tournament.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Team1Id,Team2Id,Team1Goals,Team2Goals,CompetitionId,Date,Stadium")] Game game)
+        public async Task<IActionResult> Create([Bind("Team1Id,Team2Id,Team1Goals,Team2Goals,Team1Name,Team2Name,CompetitionId,Date,Stadium")] Game game, int CompId)
         {
+            var competition = _context.Competitions.Include(c => c.CompetitionTypeNavigation).Include(c => c.Teams).FirstOrDefault(g => g.Id == CompId);
+            if (competition.CompetitionTypeNavigation.Name == "Knockout")
+            {
+                if (game.Team1Id == game.Team2Id)
+                {
+                    ModelState.AddModelError(string.Empty, "You cannot add a game between two similar teams.");
+                }
+                else
+                {
+                    var existingGame = _context.Games.FirstOrDefault(g => g.CompetitionId == CompId && ((g.Team1Id == game.Team1Id && g.Team2Id == game.Team2Id) || (g.Team1Id == game.Team2Id && g.Team2Id == game.Team1Id)));
+                    if (existingGame != null)
+                    {
+                        ModelState.AddModelError(string.Empty, "A game between these two teams already exists in this knockout competition.");
+                    }
+                }
+            }
+
             if (ModelState.IsValid)
             {
+                game.Team1Name = _context.Teams.Find(game.Team1Id).Name;
+                game.Team2Name = _context.Teams.Find(game.Team2Id).Name;
+                game.CompetitionId = CompId;
                 _context.Add(game);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Id", game.CompetitionId);
-            ViewData["Team1Id"] = new SelectList(_context.Teams, "Id", "Id", game.Team1Id);
-            ViewData["Team2Id"] = new SelectList(_context.Teams, "Id", "Id", game.Team2Id);
+            ViewData["Team1Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == CompId)), "Id", "Name");
+            ViewData["Team2Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == CompId)), "Id", "Name");
+            ViewBag.id = CompId;
             return View(game);
         }
 
@@ -88,9 +122,10 @@ namespace Competition_Tournament.Controllers
             {
                 return NotFound();
             }
+            var competition = _context.Competitions.Include(c => c.Teams).FirstOrDefault(g => g.Id == id);
             ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Id", game.CompetitionId);
-            ViewData["Team1Id"] = new SelectList(_context.Teams, "Id", "Id", game.Team1Id);
-            ViewData["Team2Id"] = new SelectList(_context.Teams, "Id", "Id", game.Team2Id);
+            ViewData["Team1Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == id)), "Id", "Name");
+            ViewData["Team2Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == id)), "Id", "Name");
             return View(game);
         }
 
@@ -99,7 +134,7 @@ namespace Competition_Tournament.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Team1Id,Team2Id,Team1Goals,Team2Goals,CompetitionId,Date,Stadium")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Team1Id,Team2Id,Team1Goals,Team2Goals,CompetitionId,Date,Stadium,Team1Name,Team2Name")] Game game)
         {
             if (id != game.Id)
             {
@@ -110,6 +145,8 @@ namespace Competition_Tournament.Controllers
             {
                 try
                 {
+                    game.Team1Name = _context.Teams.Find(game.Team1Id).Name;
+                    game.Team2Name = _context.Teams.Find(game.Team2Id).Name;
                     _context.Update(game);
                     await _context.SaveChangesAsync();
                 }
@@ -126,9 +163,10 @@ namespace Competition_Tournament.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            var competition = _context.Competitions.Include(c => c.Teams).FirstOrDefault(g => g.Id == id);
             ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Id", game.CompetitionId);
-            ViewData["Team1Id"] = new SelectList(_context.Teams, "Id", "Id", game.Team1Id);
-            ViewData["Team2Id"] = new SelectList(_context.Teams, "Id", "Id", game.Team2Id);
+            ViewData["Team1Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == id)), "Id", "Name");
+            ViewData["Team2Id"] = new SelectList(_context.Teams.Where(t => t.Competitions.Any(c => c.Id == id)), "Id", "Name");
             return View(game);
         }
 

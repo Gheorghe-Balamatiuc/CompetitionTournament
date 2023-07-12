@@ -20,22 +20,24 @@ namespace Competition_Tournament.Controllers
         }
 
         // GET: Index
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? id, int? competitionId)
         {
-            if (id == null)
+            IQueryable<Player> players = _context.Players.Include(p => p.IdTeamNavigation);
+
+            if (id != null)
             {
-                var allPlayers = _context.Players;
-                ViewBag.Teams = new SelectList(_context.Teams, "Id", "Name");
-                return View(await allPlayers.ToListAsync());
+                players = players.Where(p => p.IdTeam == id);
             }
-            else
+
+            if (competitionId != null)
             {
-                var playersInTeam = _context.Players
-                    .Where(p => p.IdTeam == id)
-                    .Include(p => p.IdTeamNavigation);
-                ViewBag.Teams = new SelectList(_context.Teams, "Id", "Name");
-                return View(await playersInTeam.ToListAsync());
+                players = players.Where(p => p.IdTeamNavigation.Competitions.Any(c => c.Id == competitionId));
             }
+
+            ViewData["Teams"] = new SelectList(_context.Teams, "Id", "Name");
+            ViewData["Competitions"] = new SelectList(_context.Competitions, "Id", "Name");
+
+            return View(await players.ToListAsync());
         }
 
         // GET: Players/Details/5

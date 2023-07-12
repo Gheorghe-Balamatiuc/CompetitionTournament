@@ -1,21 +1,28 @@
-﻿using Competition_Tournament.Models;
+﻿using Competition_Tournament.Data;
+using Competition_Tournament.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Competition_Tournament.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly CompetitionManagementContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, CompetitionManagementContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var competitions = await _context.Competitions.ToListAsync();
+            return View(competitions);
         }
 
         public IActionResult Privacy()
