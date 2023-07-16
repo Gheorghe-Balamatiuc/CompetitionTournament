@@ -24,7 +24,6 @@ public partial class Team
     public string? Motto { get; set; }
 
     [Column("Created_On", TypeName = "date")]
-    [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
     public DateTime? CreatedOn { get; set; }
 
     [InverseProperty("Team1")]
