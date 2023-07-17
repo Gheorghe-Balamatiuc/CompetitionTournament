@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Competition_Tournament.Models.Team>
+
+@{
+    ViewData["Title"] = "LeaderboardKnockout";
+}
+
+<h1 class="display-custom">Leaderboard</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                Award Nr
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Motto)
+            </th>
+            <th>
+                Created On
+            </th>
+            <th>Goals Scored</th>
+            <th>Goals Conceded</th>
+            <th>Wins</th>
+            <th>Losses</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AwardNr)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Motto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedOn)
+                </td>
+                <td>@ViewBag.GoalsScored[item.Id]</td>
+                <td>@ViewBag.GoalsConceded[item.Id]</td>
+                <td>@ViewBag.TeamWins[item.Id]</td>
+                <td>@ViewBag.TeamLosses[item.Id]</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@ViewBag.id">Back to details</a>
+</div>

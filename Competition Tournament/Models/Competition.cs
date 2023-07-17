@@ -17,9 +17,11 @@ public partial class Competition
     public string? Name { get; set; }
 
     [Column("Start_Date", TypeName = "date")]
+    [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
     public DateTime? StartDate { get; set; }
 
     [Column("End_Date", TypeName = "date")]
+    [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
     public DateTime? EndDate { get; set; }
 
     [StringLength(255)]

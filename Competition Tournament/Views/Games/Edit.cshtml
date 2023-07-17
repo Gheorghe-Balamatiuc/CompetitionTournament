@@ -1,0 +1,67 @@
+﻿@model Competition_Tournament.Models.Game
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1 class="display-custom">Edit</h1>
+
+<h4>Game</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Team1Id" class="control-label">Team1 Name</label>
+                <select hidden asp-for="Team1Id" class="form-control" asp-items="ViewBag.Team1Id"></select>
+                <input class="form-control" type="text" asp-for="Team1Name" readonly />
+                <span asp-validation-for="Team1Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team2Id" class="control-label">Team2 Name</label>
+                <select hidden asp-for="Team2Id" class="form-control" asp-items="ViewBag.Team2Id"></select>
+                <input class="form-control" type="text" asp-for="Team2Name" readonly />
+                <span asp-validation-for="Team2Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team1Goals" class="control-label">Team1 Goals</label>
+                <input asp-for="Team1Goals" class="form-control" min="0" />
+                <span asp-validation-for="Team1Goals" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Team2Goals" class="control-label">Team2 Goals</label>
+                <input asp-for="Team2Goals" class="form-control" min="0" />
+                <span asp-validation-for="Team2Goals" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompetitionId" class="control-label">Competition Name</label>
+                <select hidden asp-for="CompetitionId" class="form-control" asp-items="ViewBag.CompetitionId"></select>
+                <input class="form-control" type="text" value="@ViewBag.CompetitionName" readonly />
+                <span asp-validation-for="CompetitionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Stadium" class="control-label"></label>
+                <input asp-for="Stadium" class="form-control" />
+                <span asp-validation-for="Stadium" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-outline-primary form-group-addteam-custom" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a class="btn btn-outline-secondary form-group-addteam-custom" asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

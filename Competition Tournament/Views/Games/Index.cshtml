@@ -1,0 +1,85 @@
+﻿@model IEnumerable<Competition_Tournament.Models.Game>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="display-custom">Index</h1>
+<!--
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+-->
+
+<form method="get">
+    <label for="competitionId"><b>Competition:</b></label>
+    <select id="competitionId" name="competitionId" onchange="this.form.submit()">
+        <option value="">All</option>
+        @foreach (var item in ViewBag.Competitions)
+        {
+            var selected = item.Value == Context.Request.Query["competitionId"];
+            <option value="@item.Value" selected="@selected">@item.Text</option>
+        }
+    </select>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stadium)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Competition)
+            </th>
+            <th>
+                Team1 Name
+            </th>
+            <th>
+                Team2 Name
+            </th>
+            <th>
+                Team1 Goals
+            </th>
+            <th>
+                Team2 Goals
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stadium)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Competition.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team1Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team2Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team1Goals)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team2Goals)
+            </td>
+            <td>
+                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
