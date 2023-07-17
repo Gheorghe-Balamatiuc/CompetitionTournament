@@ -37,6 +37,8 @@ public partial class CompetitionManagementContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__COMPETIT__3214EC07FB846642");
 
+            entity.ToTable("COMPETITION", tb => tb.HasTrigger("trg_COMPETITION_Delete"));
+
             entity.HasOne(d => d.CompetitionTypeNavigation).WithMany(p => p.Competitions)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK__COMPETITI__Compe__3E52440B");
@@ -91,12 +93,12 @@ public partial class CompetitionManagementContext : DbContext
         modelBuilder.Entity<Team>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__TEAM__3214EC078C6DC96E");
+
+            entity.ToTable("TEAM", tb => tb.HasTrigger("trg_TEAM_Delete"));
         });
 
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
-    public DbSet<Competition_Tournament.Models.ViewModel.TeamSelector>? TeamSelector { get; set; }
 }

@@ -4,9 +4,9 @@
     ViewData["Title"] = "AddTeam";
 }
 
-<h1>AddTeam</h1>
+<h1 class="display-custom">Add Team</h1>
 
-<h4>TeamSelector</h4>
+<h4>Team Selector</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -18,8 +18,8 @@
                 <select asp-for="Team" class="form-control" asp-items="ViewBag.availableTeams"></select>
                 <span asp-validation-for="Team" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="AddTeam" class="btn btn-primary" />
+            <div class="form-group form-group-addteam-custom">
+                <input type="submit" value="Add Team" class="btn btn-outline-success" />
             </div>
         </form>
     </div>
@@ -29,7 +29,7 @@
     <thead>
         <tr>
             <th>
-                TeamName
+                Team Name
             </th>
             <th></th>
         </tr>
@@ -43,7 +43,7 @@
                 </td>
                 <td>
                     <form asp-action="RemoveTeam" asp-route-id="@Model.Competition.Id" asp-route-teamId="@item.Id" method="post">
-                        <input type="submit" value="Remove" class="btn btn-danger" />
+                        <input type="submit" value="Remove" class="btn btn-outline-danger" />
                     </form>
                 </td>
             </tr>
@@ -52,7 +52,7 @@
 </table>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@ViewBag.id">Back to details</a>
 </div>
 
 @section Scripts {

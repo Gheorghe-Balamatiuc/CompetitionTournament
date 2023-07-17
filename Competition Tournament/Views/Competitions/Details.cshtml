@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1 class="display-custom">Details</h1>
 
 <div>
     <h4>Competition</h4>
@@ -17,13 +17,13 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
+            Start Date
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.StartDate)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
+            End Date
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.EndDate)
@@ -43,17 +43,17 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-area="" asp-controller="Home" asp-action="Index">Back to List</a> |
-    <a asp-action="AddTeam" asp-route-id="@Model?.Id">Add teams</a> |
-    <a asp-controller="Games" asp-action="Create" asp-route-id="@Model?.Id">Add Games</a> |
+    <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> 
+    <a class="btn btn-outline-secondary" asp-area="" asp-controller="Home" asp-action="Index">Back to List</a> 
+    <a class="btn btn-outline-primary" asp-action="AddTeam" asp-route-id="@Model?.Id">Add teams</a> 
+    <a class="btn btn-outline-primary" asp-controller="Games" asp-action="Create" asp-route-id="@Model?.Id">Add Games</a> 
     @if (Model.CompetitionTypeNavigation.Name == "Round-robin")
     {
-        <a asp-action="Leaderboard" asp-route-id="@Model?.Id">Leaderboard</a>
+        <a class="btn btn-outline-primary" asp-action="Leaderboard" asp-route-id="@Model?.Id">Leaderboard</a>
     }
     else if (Model.CompetitionTypeNavigation.Name == "Knockout")
     {
-        <a asp-action="LeaderboardKnockout" asp-route-id="@Model?.Id">Leaderboard</a>
+        <a class="btn btn-outline-primary" asp-action="LeaderboardKnockout" asp-route-id="@Model?.Id">Leaderboard</a>
     }
 
 </div>

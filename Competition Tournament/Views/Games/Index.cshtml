@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="display-custom">Index</h1>
 <!--
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,18 +12,18 @@
 -->
 
 <form method="get">
-    <label for="competitionId">Competition:</label>
+    <label for="competitionId"><b>Competition:</b></label>
     <select id="competitionId" name="competitionId" onchange="this.form.submit()">
         <option value="">All</option>
         @foreach (var item in ViewBag.Competitions)
         {
-            var selected = item.Value == ViewContext.RouteData.Values["competitionId"]?.ToString();
+            var selected = item.Value == Context.Request.Query["competitionId"];
             <option value="@item.Value" selected="@selected">@item.Text</option>
         }
     </select>
 </form>
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
@@ -36,16 +36,16 @@
                 @Html.DisplayNameFor(model => model.Competition)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team1)
+                Team1 Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team2)
+                Team2 Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team1Goals)
+                Team1 Goals
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Team2Goals)
+                Team2 Goals
             </th>
             <th></th>
         </tr>
@@ -63,10 +63,10 @@
                 @Html.DisplayFor(modelItem => item.Competition.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Team1.Name)
+                @Html.DisplayFor(modelItem => item.Team1Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Team2.Name)
+                @Html.DisplayFor(modelItem => item.Team2Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Team1Goals)
@@ -75,9 +75,9 @@
                 @Html.DisplayFor(modelItem => item.Team2Goals)
             </td>
             <td>
-                <!--<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |-->
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

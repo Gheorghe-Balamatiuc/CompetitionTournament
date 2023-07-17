@@ -4,7 +4,7 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1 class="display-custom">Edit</h1>
 
 <h4>Player</h4>
 <hr />
@@ -14,34 +14,34 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
+                <label asp-for="FirstName" class="control-label">First Name</label>
+                <input asp-for="FirstName" class="form-control" required/>
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
+                <label asp-for="LastName" class="control-label">Last Name</label>
+                <input asp-for="LastName" class="form-control" required/>
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" class="form-control" />
+                <input asp-for="Age" class="form-control" required min="3"/>
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IdTeam" class="control-label"></label>
-                <select asp-for="IdTeam" class="form-control" asp-items="ViewBag.IdTeam"></select>
+                <label asp-for="IdTeam" class="control-label">Team Name</label>
+                <select asp-for="IdTeam" class="form-control" asp-items="ViewBag.IdTeam" required></select>
                 <span asp-validation-for="IdTeam" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-outline-primary form-group-addteam-custom" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-area="" asp-controller="Home" asp-action="Index">Back to List</a>
+    <a class="btn btn-outline-secondary form-group-addteam-custom" asp-area="" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

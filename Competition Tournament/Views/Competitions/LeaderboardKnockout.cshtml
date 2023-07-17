@@ -4,29 +4,27 @@
     ViewData["Title"] = "LeaderboardKnockout";
 }
 
-<h1>LeaderboardKnockout</h1>
+<h1 class="display-custom">Leaderboard</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AwardNr)
+                Award Nr
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Motto)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedOn)
+                Created On
             </th>
+            <th>Goals Scored</th>
+            <th>Goals Conceded</th>
             <th>Wins</th>
             <th>Losses</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -45,9 +43,15 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedOn)
                 </td>
+                <td>@ViewBag.GoalsScored[item.Id]</td>
+                <td>@ViewBag.GoalsConceded[item.Id]</td>
                 <td>@ViewBag.TeamWins[item.Id]</td>
                 <td>@ViewBag.TeamLosses[item.Id]</td>
             </tr>
         }
     </tbody>
 </table>
+
+<div>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@ViewBag.id">Back to details</a>
+</div>

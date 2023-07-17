@@ -4,7 +4,7 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1 class="display-custom">Edit</h1>
 
 <h4>Team</h4>
 <hr />
@@ -15,33 +15,33 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
+                <input asp-for="Name" class="form-control" required/>
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="AwardNr" class="control-label"></label>
-                <input asp-for="AwardNr" class="form-control" />
+                <label asp-for="AwardNr" class="control-label">Award Nr</label>
+                <input asp-for="AwardNr" class="form-control" min="0" required/>
                 <span asp-validation-for="AwardNr" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Motto" class="control-label"></label>
-                <input asp-for="Motto" class="form-control" />
+                <input asp-for="Motto" class="form-control" required/>
                 <span asp-validation-for="Motto" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CreatedOn" class="control-label"></label>
-                <input asp-for="CreatedOn" class="form-control" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <label asp-for="CreatedOn" class="control-label">Created On</label>
+                <input asp-for="CreatedOn" class="form-control" required type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="CreatedOn" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-outline-primary form-group-addteam-custom" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-outline-secondary form-group-addteam-custom" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

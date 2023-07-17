@@ -4,25 +4,28 @@
     ViewData["Title"] = "Leaderboard";
 }
 
-<h1>Leaderboard</h1>
+<h1 class="display-custom">Leaderboard</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AwardNr)
+                Award Nr
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Motto)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedOn)
+                Crated On
+            </th>
+            <th>
+                Goals Conceded
+            </th>
+            <th>
+                Goals Scored
             </th>
             <th>
                 Points
@@ -30,24 +33,35 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AwardNr)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Motto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedOn)
-            </td>
-            <td>
-                @ViewBag.TeamPoints[item.Id]
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AwardNr)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Motto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedOn)
+                </td>
+                <td>
+                    @ViewBag.GoalsScored[item.Id]
+                </td>
+                <td>
+                    @ViewBag.GoalsConceded[item.Id]
+                </td>
+                <td>
+                    @ViewBag.TeamPoints[item.Id]
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<div>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@ViewBag.id">Back to details</a>
+</div>

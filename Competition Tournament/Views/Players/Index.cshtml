@@ -4,48 +4,40 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="display-custom">Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="container2">
+    <p>
+        <a class="create-custom" asp-action="Create">Create New</a>
+    </p>
 
-<form method="get">
-    <label for="teamId">Team:</label>
-    <select id="teamId" name="id" onchange="this.form.submit()">
-        <option value="">All</option>
-        @foreach (var item in ViewBag.Teams)
-        {
-            var selected = item.Value == ViewContext.RouteData.Values["id"]?.ToString();
-            <option value="@item.Value" selected="@selected">@item.Text</option>
-        }
-    </select>
-    <label for="competitionId">Competition:</label>
-    <select id="competitionId" name="competitionId" onchange="this.form.submit()">
-        <option value="">All</option>
-        @foreach (var item in ViewBag.Competitions)
-        {
-            var selected = item.Value == ViewContext.RouteData.Values["competitionId"]?.ToString();
-            <option value="@item.Value" selected="@selected">@item.Text</option>
-        }
-    </select>
-</form>
+    <form method="get" class="margin-left">
+        <label for="teamId">Team:</label>
+        <select id="teamId" name="id" onchange="this.form.submit()">
+            <option value="">All</option>
+            @foreach (var item in ViewBag.Teams)
+            {
+                var selected = item.Value == ViewBag.SelectedTeamId?.ToString();
+                <option value="@item.Value" selected="@selected">@item.Text</option>
+            }
+        </select>
+    </form>
+</div>
 
-<table class="table">
+<table class="table table-striped">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                First Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                Last Name
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Age)
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.IdTeamNavigation)*@
-                TeamName
+                Team Name
             </th>
             <th></th>
         </tr>
@@ -66,9 +58,9 @@
                 @Html.DisplayFor(modelItem => item.IdTeamNavigation.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a class="btn btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

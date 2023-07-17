@@ -20,7 +20,23 @@ namespace Competition_Tournament.Controllers
         }
 
         // GET: Index
-        public async Task<IActionResult> Index(int? id, int? competitionId)
+        public async Task<IActionResult> Index(int? id)
+        {
+            IQueryable<Player> players = _context.Players.Include(p => p.IdTeamNavigation);
+
+            if (id != null)
+            {
+                players = players.Where(p => p.IdTeam == id);
+            }   
+
+            ViewData["Teams"] = new SelectList(_context.Teams, "Id", "Name");
+            ViewBag.SelectedTeamId = id;
+
+            return View(await players.ToListAsync());
+        }
+
+        // GET: Index
+        public async Task<IActionResult> Index1(int? id)
         {
             IQueryable<Player> players = _context.Players.Include(p => p.IdTeamNavigation);
 
@@ -29,13 +45,8 @@ namespace Competition_Tournament.Controllers
                 players = players.Where(p => p.IdTeam == id);
             }
 
-            if (competitionId != null)
-            {
-                players = players.Where(p => p.IdTeamNavigation.Competitions.Any(c => c.Id == competitionId));
-            }
-
             ViewData["Teams"] = new SelectList(_context.Teams, "Id", "Name");
-            ViewData["Competitions"] = new SelectList(_context.Competitions, "Id", "Name");
+            ViewBag.SelectedTeamId = id;
 
             return View(await players.ToListAsync());
         }
@@ -62,7 +73,7 @@ namespace Competition_Tournament.Controllers
         // GET: Players/Create
         public IActionResult Create()
         {
-            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Id");
+            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Name");
             return View();
         }
 
@@ -79,7 +90,7 @@ namespace Competition_Tournament.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Id", player.IdTeam);
+            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Name", player.IdTeam);
             return View(player);
         }
 
@@ -96,7 +107,7 @@ namespace Competition_Tournament.Controllers
             {
                 return NotFound();
             }
-            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Id", player.IdTeam);
+            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Name", player.IdTeam);
             return View(player);
         }
 
@@ -132,7 +143,7 @@ namespace Competition_Tournament.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Id", player.IdTeam);
+            ViewData["IdTeam"] = new SelectList(_context.Teams, "Id", "Name", player.IdTeam);
             return View(player);
         }
 

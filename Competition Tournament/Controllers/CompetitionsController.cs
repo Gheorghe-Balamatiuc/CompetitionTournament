@@ -48,7 +48,7 @@ namespace Competition_Tournament.Controllers
         // GET: Competitions/Create
         public IActionResult Create()
         {
-            ViewData["CompetitionType"] = new SelectList(_context.CompetitionTypes, "Id", "Id");
+            ViewData["CompetitionType"] = new SelectList(_context.CompetitionTypes, "Id", "Name");
             return View();
         }
 
@@ -59,13 +59,21 @@ namespace Competition_Tournament.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,StartDate,EndDate,Location,CompetitionType")] Competition competition)
         {
+            if (_context.Competitions.Any(c => c.Name == competition.Name))
+            {
+                ModelState.AddModelError("Name", "A competition with this name already exists.");
+            }
+            if(competition.StartDate >= competition.EndDate)
+            {
+                ModelState.AddModelError(string.Empty, "The end date should be grater that the start date.");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(competition);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompetitionType"] = new SelectList(_context.CompetitionTypes, "Id", "Id", competition.CompetitionType);
+            ViewData["CompetitionType"] = new SelectList(_context.CompetitionTypes, "Id", "Name", competition.CompetitionType);
             return View(competition);
         }
 
@@ -97,7 +105,17 @@ namespace Competition_Tournament.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,StartDate,EndDate,Location,CompetitionType")] Competition competition)
         {
-            if (id != competition.Id)
+            var competitionInDb = _context.Competitions.AsNoTracking().FirstOrDefault(c => c.Name == competition.Name);
+            if (competitionInDb != null && competitionInDb.Id != competition.Id)
+            {
+                ModelState.AddModelError("Name", "The competition name already exists.");
+            }
+            if (competition.StartDate >= competition.EndDate)
+            {
+                ModelState.AddModelError(string.Empty, "The end date should be grater that the start date.");
+            }
+            if (ModelState.IsValid)
+                if (id != competition.Id)
             {
                 return NotFound();
             }
@@ -122,7 +140,7 @@ namespace Competition_Tournament.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CompetitionType"] = new SelectList(_context.CompetitionTypes, "Id", "Id", competition.CompetitionType);
+            ViewData["CompetitionType"] = new SelectList(_context.CompetitionTypes, "Id", "Name", competition.CompetitionType);
             return View(competition);
         }
 
@@ -184,7 +202,8 @@ namespace Competition_Tournament.Controllers
             {
                 return NotFound();
             }
-            
+
+            ViewBag.id = competition.Id;
             ViewData["availableTeams"] = new SelectList(availableTeams, "Id", "Name");
             ViewData["addedTeams"] = new SelectList(addedTeams, "Id", "Name");
 
@@ -211,6 +230,7 @@ namespace Competition_Tournament.Controllers
                 }
             }
 
+            ViewBag.id = competition.Id;
             ViewData["availableTeams"] = new SelectList(availableTeams, "Id", "Name");
             ViewData["addedTeams"] = new SelectList(addedTeams, "Id", "Name");
 
@@ -234,6 +254,7 @@ namespace Competition_Tournament.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            ViewBag.id = competition.Id;
             ViewData["availableTeams"] = new SelectList(availableTeams, "Id", "Name");
             ViewData["addedTeams"] = new SelectList(addedTeams, "Id", "Name");
 
@@ -254,32 +275,62 @@ namespace Competition_Tournament.Controllers
             var games = await _context.Games.Where(g => g.CompetitionId == id).ToListAsync();
 
             var teamPoints = new Dictionary<int, int>();
+            var teamGoalsScored = new Dictionary<int, int>();
+            var teamGoalsConceded = new Dictionary<int, int>();
 
             foreach (var game in games)
             {
-                if (game.Team1Id != null && game.Team2Id != null)
+                // Check if the goals are not null
+                if (game.Team1Goals != null && game.Team2Goals != null)
                 {
-                    if (!teamPoints.ContainsKey(game.Team1Id.Value))
+                    if (game.Team1Id != null && game.Team2Id != null)
                     {
-                        teamPoints[game.Team1Id.Value] = 0;
-                    }
-                    if (!teamPoints.ContainsKey(game.Team2Id.Value))
-                    {
-                        teamPoints[game.Team2Id.Value] = 0;
-                    }
+                        if (!teamPoints.ContainsKey(game.Team1Id.Value))
+                        {
+                            teamPoints[game.Team1Id.Value] = 0;
+                        }
+                        if (!teamPoints.ContainsKey(game.Team2Id.Value))
+                        {
+                            teamPoints[game.Team2Id.Value] = 0;
+                        }
 
-                    if (game.Team1Goals == game.Team2Goals)
-                    {
-                        teamPoints[game.Team1Id.Value] += 1;
-                        teamPoints[game.Team2Id.Value] += 1;
-                    }
-                    else if (game.Team1Goals > game.Team2Goals)
-                    {
-                        teamPoints[game.Team1Id.Value] += 3;
-                    }
-                    else
-                    {
-                        teamPoints[game.Team2Id.Value] += 3;
+                        if (!teamGoalsScored.ContainsKey(game.Team1Id.Value))
+                        {
+                            teamGoalsScored[game.Team1Id.Value] = 0;
+                        }
+                        if (!teamGoalsScored.ContainsKey(game.Team2Id.Value))
+                        {
+                            teamGoalsScored[game.Team2Id.Value] = 0;
+                        }
+
+                        if (!teamGoalsConceded.ContainsKey(game.Team1Id.Value))
+                        {
+                            teamGoalsConceded[game.Team1Id.Value] = 0;
+                        }
+                        if (!teamGoalsConceded.ContainsKey(game.Team2Id.Value))
+                        {
+                            teamGoalsConceded[game.Team2Id.Value] = 0;
+                        }
+
+                        teamGoalsScored[game.Team1Id.Value] += game.Team1Goals.Value;
+                        teamGoalsScored[game.Team2Id.Value] += game.Team2Goals.Value;
+
+                        teamGoalsConceded[game.Team1Id.Value] += game.Team2Goals.Value;
+                        teamGoalsConceded[game.Team2Id.Value] += game.Team1Goals.Value;
+
+                        if (game.Team1Goals == game.Team2Goals)
+                        {
+                            teamPoints[game.Team1Id.Value] += 1;
+                            teamPoints[game.Team2Id.Value] += 1;
+                        }
+                        else if (game.Team1Goals > game.Team2Goals)
+                        {
+                            teamPoints[game.Team1Id.Value] += 3;
+                        }
+                        else
+                        {
+                            teamPoints[game.Team2Id.Value] += 3;
+                        }
                     }
                 }
             }
@@ -290,6 +341,9 @@ namespace Competition_Tournament.Controllers
             var sortedTeams = participatingTeams.OrderByDescending(t => teamPoints[t.Id]).ToList();
 
             ViewBag.TeamPoints = teamPoints;
+            ViewBag.id = id;
+            ViewBag.GoalsScored = teamGoalsScored;
+            ViewBag.GoalsConceded = teamGoalsConceded;
 
             return View(sortedTeams);
         }
@@ -309,31 +363,47 @@ namespace Competition_Tournament.Controllers
 
             var teamWins = new Dictionary<int, int>();
             var teamLosses = new Dictionary<int, int>();
+            var teamGoalsScored = new Dictionary<int, int>();
+            var teamGoalsConceded = new Dictionary<int, int>();
 
             foreach (var game in games)
             {
-                if (game.Team1Id != null && game.Team2Id != null)
+                // Check if the goals are not null
+                if (game.Team1Goals != null && game.Team2Goals != null)
                 {
-                    if (!teamWins.ContainsKey(game.Team1Id.Value))
+                    if (game.Team1Id != null && game.Team2Id != null)
                     {
-                        teamWins[game.Team1Id.Value] = 0;
-                        teamLosses[game.Team1Id.Value] = 0;
-                    }
-                    if (!teamWins.ContainsKey(game.Team2Id.Value))
-                    {
-                        teamWins[game.Team2Id.Value] = 0;
-                        teamLosses[game.Team2Id.Value] = 0;
-                    }
+                        if (!teamWins.ContainsKey(game.Team1Id.Value))
+                        {
+                            teamWins[game.Team1Id.Value] = 0;
+                            teamLosses[game.Team1Id.Value] = 0;
+                            teamGoalsScored[game.Team1Id.Value] = 0;
+                            teamGoalsConceded[game.Team1Id.Value] = 0;
+                        }
+                        if (!teamWins.ContainsKey(game.Team2Id.Value))
+                        {
+                            teamWins[game.Team2Id.Value] = 0;
+                            teamLosses[game.Team2Id.Value] = 0;
+                            teamGoalsScored[game.Team2Id.Value] = 0;
+                            teamGoalsConceded[game.Team2Id.Value] = 0;
+                        }
 
-                    if (game.Team1Goals > game.Team2Goals)
-                    {
-                        teamWins[game.Team1Id.Value] += 1;
-                        teamLosses[game.Team2Id.Value] += 1;
-                    }
-                    else
-                    {
-                        teamWins[game.Team2Id.Value] += 1;
-                        teamLosses[game.Team1Id.Value] += 1;
+                        teamGoalsScored[game.Team1Id.Value] += game.Team1Goals.Value;
+                        teamGoalsScored[game.Team2Id.Value] += game.Team2Goals.Value;
+
+                        teamGoalsConceded[game.Team1Id.Value] += game.Team2Goals.Value;
+                        teamGoalsConceded[game.Team2Id.Value] += game.Team1Goals.Value;
+
+                        if (game.Team1Goals > game.Team2Goals)
+                        {
+                            teamWins[game.Team1Id.Value] += 1;
+                            teamLosses[game.Team2Id.Value] += 1;
+                        }
+                        else
+                        {
+                            teamWins[game.Team2Id.Value] += 1;
+                            teamLosses[game.Team1Id.Value] += 1;
+                        }
                     }
                 }
             }
@@ -342,9 +412,12 @@ namespace Competition_Tournament.Controllers
             participatingTeams = participatingTeams.Where(t => teamWins.ContainsKey(t.Id)).ToList();
 
             var sortedTeams = participatingTeams.OrderBy(t => teamLosses[t.Id]).ToList();
-            
+
             ViewBag.TeamWins = teamWins;
             ViewBag.TeamLosses = teamLosses;
+            ViewBag.id = id;
+            ViewBag.GoalsScored = teamGoalsScored;
+            ViewBag.GoalsConceded = teamGoalsConceded;
 
             return View(sortedTeams);
         }
