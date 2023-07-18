@@ -122,7 +122,7 @@ namespace Competition_Tournament.Controllers
                 game.CompetitionId = CompId;
                 _context.Add(game);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Competitions", new { id = game.CompetitionId });
             }
 
             ViewData["CompetitionId"] = new SelectList(_context.Competitions, "Id", "Id", game.CompetitionId);
