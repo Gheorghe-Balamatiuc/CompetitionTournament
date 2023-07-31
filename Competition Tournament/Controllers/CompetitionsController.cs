@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Competition_Tournament.Data;
 using Competition_Tournament.Models;
 using Competition_Tournament.Models.ViewModel;
+using System.Numerics;
 
 namespace Competition_Tournament.Controllers
 {
@@ -57,7 +58,7 @@ namespace Competition_Tournament.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,StartDate,EndDate,Location,CompetitionType")] Competition competition)
+        public async Task<IActionResult> Create([Bind("Id,Name,StartDate,EndDate,Location,CompetitionType,ImageFile")] Competition competition)
         {
             if (_context.Competitions.Any(c => c.Name == competition.Name))
             {
@@ -69,6 +70,16 @@ namespace Competition_Tournament.Controllers
             }
             if (ModelState.IsValid)
             {
+                var imageFile = competition.ImageFile;
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        await imageFile.CopyToAsync(stream);
+                        competition.Image = stream.ToArray();
+                    }
+                }
+
                 _context.Add(competition);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -103,7 +114,7 @@ namespace Competition_Tournament.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,StartDate,EndDate,Location,CompetitionType")] Competition competition)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,StartDate,EndDate,Location,CompetitionType,ImageFile")] Competition competition)
         {
             var competitionInDb = _context.Competitions.AsNoTracking().FirstOrDefault(c => c.Name == competition.Name);
             if (competitionInDb != null && competitionInDb.Id != competition.Id)
@@ -124,7 +135,27 @@ namespace Competition_Tournament.Controllers
             {
                 try
                 {
-                    _context.Update(competition);
+                    var currentCompetition = await _context.Competitions.FindAsync(id);
+                    var imageFile = competition.ImageFile;
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        using (var stream = new MemoryStream())
+                        {
+                            await imageFile.CopyToAsync(stream);
+                            currentCompetition.Image = stream.ToArray();
+                        }
+                    }
+                    else
+                    {
+                        currentCompetition.Image = null;
+                    }
+                    currentCompetition.Name = competition.Name;
+                    currentCompetition.StartDate = competition.StartDate;
+                    currentCompetition.EndDate = competition.EndDate;
+                    currentCompetition.Location = competition.Location;
+                    currentCompetition.CompetitionType = competition.CompetitionType;
+
+                    _context.Update(currentCompetition);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

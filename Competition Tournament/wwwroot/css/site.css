@@ -146,3 +146,23 @@ body {
 .winner-custom1 {
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
+
+.display-flex {
+    display: flex;
+}
+
+img {
+    background-color: transparent;
+    margin-top: 20px;
+}
+
+.img-thumbnail {
+    background-color: transparent;
+    border: 0;
+}
+
+.div-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

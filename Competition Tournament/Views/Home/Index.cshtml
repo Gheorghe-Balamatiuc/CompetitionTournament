@@ -17,11 +17,19 @@
         @for (int i = 0; i < Model.Count; i++)
         {
             var competition = Model[i];
-            <div class="custom-block custom-block-half">
-                <h2>Competition @(i + 1): @competition.Name</h2>
-                <p><span class="winner-custom">Winner:</span> <span class="winner-custom1">@ViewBag.CompetitionWinners[competition.Id]</span></p>
-                <a class="details-custom" href="@Url.Action("Details", "Competitions", new { id = competition.Id })">Details</a>
-                <a class="delete-custom" href="@Url.Action("Delete", "Competitions", new { id = competition.Id })">Delete</a>
+            <div class="display-flex">
+                <div class="custom-block custom-block-half">
+                    <h2>Competition @(i + 1): @competition.Name</h2>
+                    <p><span class="winner-custom">Winner:</span> <span class="winner-custom1">@ViewBag.CompetitionWinners[competition.Id]</span></p>
+                    <a class="details-custom" href="@Url.Action("Details", "Competitions", new { id = competition.Id })">Details</a>
+                    <a class="delete-custom" href="@Url.Action("Delete", "Competitions", new { id = competition.Id })">Delete</a>
+                </div>
+                <div class="div-image custom-block-half">
+                    @if (competition.Image != null)
+                    {
+                        <img src="@($"data:image;base64,{Convert.ToBase64String(competition.Image)}")" alt="Player Picture" class="img-thumbnail" style="max-width: 148.75px; max-height: 148.75px;" />
+                    }
+                </div>
             </div>
         }
     </div>
